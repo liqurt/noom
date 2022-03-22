@@ -25,6 +25,13 @@ socket.addEventListener("close", () => {
 //     socket.send("hello from the browser!");
 // }, 10000)
 
+function handleNickSubmit(event){
+    event.preventDefault()
+    const input = nickForm.querySelector("input")
+    socket.send(makeMessage("nickname",input.value))
+    input.value = ""
+}
+
 function handleSubmit(event){
     event.preventDefault()
     const input = messageForm.querySelector("input")
@@ -32,13 +39,7 @@ function handleSubmit(event){
     input.value = ""
 }
 
-function handleNickSubmit(event){
-    event.preventDefault()
-    const input = nickForm.querySelector("input")
-    // text가 아니라 Json으로 서버에 전송
-    socket.send(makeMessage("nickname",input.value))
-}
-
+// Json->String
 function makeMessage(type, payload){
     const msg = {type, payload}
     return JSON.stringify(msg)

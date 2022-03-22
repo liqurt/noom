@@ -41,13 +41,24 @@ const sockets = []
 // 여기서의 socket은 브라우저를 뜻한다.
 wss.on("connection", (socket) =>{
     sockets.push(socket)
+    // socket 안에 값을 저장할수 있다. 기존에 nickname 없었는데 이렇게 하면 nickname:Anonymous 로 저장 가능.
+    socket["nickname"] = "Anonymous"
     console.log("Connected to Browser ✅")
     socket.on("close",()=>{
         console.log("Disconnected from the Browser ❌")
     })
-    socket.on("message", message =>{
-        //sockets 내부의 모든 socket에게 메시지를 보낸다.
-        sockets.forEach(aSocket =>aSocket.send(message.toString('utf-8')))
+    socket.on("message", msg =>{
+        const message = JSON.parse(msg)
+        console.log(message)
+        switch(message.type){
+            case "new_message" :
+                //sockets 내부의 모든 socket에게 메시지를 보낸다.
+                sockets.forEach(aSocket =>aSocket.send(`${socket.nickname} : ${message.payload}`))
+                break
+            case "nickname" :
+                socket["nickname"] = message.payload
+                break
+        }
     })
 })
 
