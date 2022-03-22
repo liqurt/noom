@@ -14,7 +14,7 @@ app.set("views", __dirname + "/views")
 // user가 /public 으로 가면, "__dirname + /public" 폴더를 보여주게 한다.
 // 애초에 public파일들("public/js/app.js")은 FrontEnd에서 구동되는 코드임.
 // server.js는 프론트가 아님.
-app.use("/public",express.static(__dirname + "/public"))
+app.use("/public", express.static(__dirname + "/public"))
 
 //route
 app.get("/", (req, res) => res.render("home"))
@@ -30,8 +30,14 @@ const server = http.createServer(app)
 // socket.io server 만들기
 const wsServer = SocketIO(server)
 
-wsServer.on("connection", socket=>{
-    console.log(socket)
+wsServer.on("connection", (socket) =>{
+    socket.on("enter_room", (msg, done) => {
+        console.log(msg)
+        setTimeout(() => {
+            done()
+        }, 10000)
+    })
 })
+    
 
 server.listen(3000, handleListen)
