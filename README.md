@@ -11,3 +11,6 @@ Zoom Clone using NodeJS, webRTC and webSockets.
 ## client
 1. open browser
 2. go to "localhost:3000"
+
+# gitIgnore
+- /node_modules

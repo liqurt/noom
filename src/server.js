@@ -1,6 +1,6 @@
 import http from "http"
-import WebSocket from "ws"
 import express from "express"
+import SocketIO from "socket.io"
 
 const app = express()
 
@@ -27,39 +27,11 @@ const handleListen = () => console.log("Listening on http://localhost:3000")
 
 // http server 만들기
 const server = http.createServer(app)
+// socket.io server 만들기
+const wsServer = SocketIO(server)
 
-// web socket server 만들기(※ parameter는 넣어도 그만 안 넣어도 그만)
-const wss = new WebSocket.Server({server})
-// 아무튼 지금은 같은 서버에서 http, ws 둘다 같은 port에서 작동. (ws만 하고싶으면 http 서버는 지우고, ws의 파라미터를 제거)
-
-// connection 이라는 event를 기다린다. event 발생 시 아래의 람다 함수 실행
-// 물론 아래 코드가 없어도 브라우저와의 연결은 된다. 아래 코드는 연결되었을때 할 일을 정한것 뿐.
-
-// socket들을 저장할 임시 배열
-const sockets = []
-
-// 여기서의 socket은 브라우저를 뜻한다.
-wss.on("connection", (socket) =>{
-    sockets.push(socket)
-    // socket 안에 값을 저장할수 있다. 기존에 nickname 없었는데 이렇게 하면 nickname:Anonymous 로 저장 가능.
-    socket["nickname"] = "Anonymous"
-    console.log("Connected to Browser ✅")
-    socket.on("close",()=>{
-        console.log("Disconnected from the Browser ❌")
-    })
-    socket.on("message", msg =>{
-        const message = JSON.parse(msg)
-        console.log(message)
-        switch(message.type){
-            case "new_message" :
-                //sockets 내부의 모든 socket에게 메시지를 보낸다.
-                sockets.forEach(aSocket =>aSocket.send(`${socket.nickname} : ${message.payload}`))
-                break
-            case "nickname" :
-                socket["nickname"] = message.payload
-                break
-        }
-    })
+wsServer.on("connection", socket=>{
+    console.log(socket)
 })
 
 server.listen(3000, handleListen)
