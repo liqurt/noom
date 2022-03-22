@@ -32,4 +32,11 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({server});
 // 아무튼 지금은 같은 서버에서 http, ws 둘다 같은 port에서 작동. (ws만 하고싶으면 http 서버는 지우고, ws의 파라미터를 제거)
 
+function handleConnection(socket){
+    // 여기서의 socket은 연결된 브라우저다.
+    console.log(socket)
+}
+// connection 이라는 event를 기다린다. event 발생 시 handleConnection 실행
+wss.on("connection", handleConnection)
+
 server.listen(3000, handleListen);
